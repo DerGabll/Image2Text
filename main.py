@@ -1,31 +1,40 @@
-import pytesseract
-from PIL import Image
+import easyocr
 import keyboard
 import glob
 import time
 import os
+import pyautogui
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+print("Loading EasyOCR model...")
+reader = easyocr.Reader(['de'], gpu=False)
+print("Model loaded!")
 
-SCREENSHOT_PATH = r"C:\Users\hudi\Pictures\Screenshots\*"
+SCREENSHOT_PATH = r"C:\Users\Bob\Pictures\Screenshots"
+if not os.path.exists(SCREENSHOT_PATH):
+    print("ERROR: Du edi dein SCREENSHOT_PATH isch it richtig")
+    quit()
+SCREENSHOT_PATH += r"\*"
 
 while True:
-    print("READY TO READ IMAGE TEXT")
+    print("\n=== READY TO READ IMAGE TEXT ===")
     keyboard.wait("r")
     time.sleep(0.1)
+
     screenshot_files = glob.glob(SCREENSHOT_PATH)
+    if not screenshot_files:
+        print("ERROR: No screenshots found!")
+        continue
 
     latest_file = max(screenshot_files, key=os.path.getctime)
+    print(f"Reading: {os.path.basename(latest_file)}")
 
-    image = Image.open(latest_file)
+    results = reader.readtext(latest_file, detail=0)
+    words = ' '.join(results).strip()
 
-    words: str = pytesseract.image_to_string(image)
-    words = words.replace('\n', ' ') 
-    words = words.rstrip()
-    print(words[:50])
-    
-    print("READY TO LAUNCH")
+    print("\n--- Extracted Text ---")
+    print(words)
+    print("----------------------")
+
+    print("\nREADY TO LAUNCH")
     keyboard.wait("enter")
-
-    keyboard.write(words)
-    print("DONE")
+    pyautogui.write(words, interval=0.1)
