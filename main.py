@@ -7,11 +7,13 @@ import os
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
+SCREENSHOT_PATH = r"C:\Users\hudi\Pictures\Screenshots\*"
+
 while True:
     print("READY TO READ IMAGE TEXT")
     keyboard.wait("r")
     time.sleep(0.1)
-    screenshot_files = glob.glob(r'C:\Users\hudi\Pictures\Screenshots\*')
+    screenshot_files = glob.glob(SCREENSHOT_PATH)
 
     latest_file = max(screenshot_files, key=os.path.getctime)
 
